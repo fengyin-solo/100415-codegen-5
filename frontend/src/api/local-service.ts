@@ -13,6 +13,11 @@ export function moduleMeta(key: string): ModuleMeta {
   return meta
 }
 
+/** 兼容旧状态：历史数据里的旧状态别名先归一到当前状态再判断。 */
+export function normalizeStatus(meta: ModuleMeta, status: string): string {
+  return meta.legacyStatuses?.[status] ?? status
+}
+
 export function filterRows(rows: EntryRow[], filters: Record<string, string>): EntryRow[] {
   const pairs = Object.entries(filters).filter(([, value]) => value.trim() !== '')
   if (pairs.length === 0) {
@@ -39,9 +44,12 @@ export function runAction(key: string, id: number, action: string): ActionResult
   if (index < 0) {
     return { ok: false, message: `没有找到编号为 ${id} 的${meta.entity}` }
   }
-  const current = String(rows[index].status)
+  const current = normalizeStatus(meta, String(rows[index].status))
   if (current === target) {
     return { ok: false, message: `${meta.entity}已经是「${target}」，不用重复操作` }
+  }
+  if (meta.lockedStatuses?.includes(current)) {
+    return { ok: false, message: `${meta.entity}处于「${current}」状态，记录不得退回，不能执行「${action}」` }
   }
   const lastStatus = meta.statuses[meta.statuses.length - 1]
   const updated: EntryRow = {

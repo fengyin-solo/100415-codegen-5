@@ -68,4 +68,7 @@ npm run build
 - 字段、状态、动作与流转目标集中在 `frontend/src/data/modules.ts`；示例数据在
   `frontend/src/data/seed.ts`。
 - 状态流转只允许在 `local-service.ts` 里改，页面组件不做业务判断。
+- 行李转运的整组交接（多选待卸机航班一次提交、逐条处理、失败续跑、过站监控联动生成到达待办）
+  在 `frontend/src/api/baggage-handover.ts`；整组记录持久化在 localStorage 的
+  `airport-ground-handling:baggage-handover-groups`，重复提交同一整组只保留首个版本。
 - 想回到初始数据：清掉浏览器里 `airport-ground-handling:entries` 这一项，或调用 `resetModule(模块)`。

@@ -18,6 +18,10 @@ export type ModuleMeta = {
   actions: string[]
   actionTargets: Record<string, string>
   metrics: string[]
+  /** 终态锁定：进入这些状态后不允许再执行任何动作（如行李转运「已到达」记录不得退回） */
+  lockedStatuses?: string[]
+  /** 旧状态别名 → 当前状态：读取历史数据时兼容旧转运状态 */
+  legacyStatuses?: Record<string, string>
 }
 
 export type PageResult = {
